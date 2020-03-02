@@ -5,12 +5,20 @@
 // checking dependency
 const express = require('express')
 const router = express.Router()
-
+const People = require('../models/people')
 
 
 // route for getting all users
-router.get('/', (req,res) => {
-    res.send("Hello WORLD")
+router.get('/', async (req,res) => {
+    try{
+        // return/fetch all associated people objects
+        const peoples = await People.find()
+        // sending in JSON
+        res.json(peoples)
+
+    } catch (err) {
+        err.status(500).json({message:err.message})
+    }
 
 })
 // route for getting one users
@@ -19,7 +27,23 @@ router.get('/:id', (req,res) => {
 
 })
 // route for creating a user
-router.post('/', (req,res) => {
+router.post('/', async (req,res) => {
+    const people = new People({
+        name: req.body.name,
+        peopleFollower: req.body.peopleFollower
+    })
+
+    try {
+        // store a info
+        const newPeople = await people.save()
+        // 201 success status
+        res.status(201).json(newPeople)
+
+    } catch (err) {
+        // 400 error status
+        res.status(400).json({message:err.message})
+
+    }
 
 })
 // route for updating a user 
